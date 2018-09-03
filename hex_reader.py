@@ -24,8 +24,10 @@ def str_to_hex(s):
     for c in s:
         h = hex(ord(c)).replace('0x', '')
         if (len(h) == 1):
-            h = '0%s' % h
-        r = '%s%s '% (r,h)
+            #h = '0%s' % h
+            h = '0' + h
+        #r = '%s%s '% (r,h)
+        r = r + h + ' '
     return str.upper(r)
 
 def read_file(file_name,read_interval):
@@ -36,12 +38,13 @@ def read_file(file_name,read_interval):
     for i in xrange(read_interval[1]):
         read_data = f.read(read_size) 
         if i >= read_interval[0]:
-            data ='%s%s' % (data,read_data)
+            #data ='%s%s' % (data,read_data)
+            data = data + read_data
         else :
             pass
     f.close()
     print len(data)
-    print data
+    #print data
     #exit()
     return data
 
