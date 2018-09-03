@@ -20,15 +20,13 @@ def table_print(s):
         row += 1
 
 def str_to_hex(s):
-    r = ''
+    l = []
     for c in s:
         h = hex(ord(c)).replace('0x', '')
         if (len(h) == 1):
-            #h = '0%s' % h
-            h = '0' + h
-        #r = '%s%s '% (r,h)
-        r = r + h + ' '
-    return str.upper(r)
+            h = '0'+h
+        l.append(str.upper(h))
+    return ' '.join(l)
 
 def read_file(file_name,read_interval):
     print read_interval
