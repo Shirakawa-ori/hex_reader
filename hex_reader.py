@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
 import os
 import sys
 
@@ -5,6 +8,7 @@ class getsizeERRO(Exception):
     pass
 
 def table_print(s):
+    print ''
     l = s.split(' ')
     print '{:^8}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|'.format('','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F')
     print '-'*90
@@ -29,19 +33,14 @@ def str_to_hex(s):
     return ' '.join(l)
 
 def read_file(file_name,read_interval):
-    print read_interval
+    print '* Read interval:%s' % str(read_interval)
     f = open(file_name,'r')
-    read_size = 1
     data = ''
-    for i in xrange(read_interval[1]):
-        read_data = f.read(read_size) 
-        if i >= read_interval[0]:
-            #data ='%s%s' % (data,read_data)
-            data = data + read_data
-        else :
-            pass
+    f.seek(read_interval[0], 1)
+    for i in xrange(read_interval[1]-read_interval[0]):
+        data = data + f.read(1)
     f.close()
-    print len(data)
+    print '* Read done.\n* Datalen:%s' % len(data)
     #print data
     #exit()
     return data
@@ -69,26 +68,24 @@ if __name__ == '__main__' :
         print 'hex_reader.py file=/dev/sda start_byte=0 stop_byte=512'
         exit(0)
 
-    #file_name = '/sdbdata/hex_reader/hex_reader.py'
-    #file_name = '/dev/sda'
-
     try :
         file_size = get_file_size(file_name)
-        if start_byte > file_size :
-            print 'ERROR start_byte > file_size'
-            exit(0)
-        elif stop_byte > file_size :
-            print 'Warning stop_byte > file_size'
-        else :
-            file_size = stop_byte
     except getsizeERRO as e:
-        print e
-        print 'Warning getsizeERRO block device?'
+        print '*' ,e ,', getFilesizeERRO block device?'
         file_size = 512
         file_size = stop_byte
     except Exception as e:
         print e
         exit()
-
-    read_interval = [start_byte,file_size]
-    table_print(str_to_hex(read_file(file_name,read_interval)))
+    if start_byte > file_size :
+        print '* ERROR start_byte > file_size'
+        exit(0)
+    elif stop_byte > file_size :
+        print '* Warning stop_byte > file_size'
+    elif start_byte > stop_byte :
+        print '* ERROR start_byte > stop_byte'
+        exit(0)
+    else :
+        file_size = stop_byte
+    print ''
+    table_print(str_to_hex(read_file(file_name,[start_byte,file_size])))
