@@ -6,22 +6,22 @@ import sys
 
 class getsizeERRO(Exception):
     pass
-
-def table_print(s):
-    print ''
-    l = s.split(' ')
-    print '{:^8}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|'.format('','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F')
-    print '-'*90
-    pl = [l[i:i+16] for i in xrange(0,len(l),16)]
-    row = 0
-    for p in pl :
-        p.insert(0,'0x%s0' %str.upper(str(hex(row)).replace('0x', '')))
-        if len(p)<17 :
-            for i in xrange(17-len(p)):
-                p.append('')
-        #print '{:^8}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|'.format(p)
-        print '{:^8}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|'.format(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15],p[16])
-        row += 1
+class table_print():
+    def __init__(self):
+        self.row = 0
+    def hard(self):
+        print '{:^8}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|'.format('','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F')
+        print '-'*90
+    def print_Hex(self,s):
+        l = s.split(' ')
+        pl = [l[i:i+16] for i in xrange(0,len(l),16)]
+        for p in pl :
+            p.insert(0,'0x%s0' %str.upper(str(hex(self.row)).replace('0x', '')))
+            if len(p)<17 :
+                for i in xrange(17-len(p)):
+                    p.append('')
+            print '{:^8}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|{:^4}|'.format(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15],p[16])
+            self.row += 1
 
 def str_to_hex(s):
     l = []
@@ -36,11 +36,22 @@ def read_file(file_name,read_interval):
     print '* Read interval:%s' % str(read_interval)
     f = open(file_name,'r')
     data = ''
+    dlen = 0
     f.seek(read_interval[0], 1)
+    tp.hard()
     for i in xrange(read_interval[1]-read_interval[0]):
         data = data + f.read(1)
-    f.close()
-    print '* Read done.\n* Datalen:%s' % len(data)
+        dlen+=1 
+        if len(data) == 16 :
+            tp.print_Hex(str_to_hex(data))
+            data = ''
+        else :
+            pass
+    tp.print_Hex(str_to_hex(data))
+    data = ''
+
+    #f.close()
+    print '* Read done.\n* Datalen:%s' % dlen
     #print data
     #exit()
     return data
@@ -88,4 +99,5 @@ if __name__ == '__main__' :
     else :
         file_size = stop_byte
     print ''
-    table_print(str_to_hex(read_file(file_name,[start_byte,file_size])))
+    tp = table_print()
+    str_to_hex(read_file(file_name,[start_byte,file_size]))
