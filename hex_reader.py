@@ -50,7 +50,7 @@ def read_file(file_name,read_interval):
     tp.print_Hex(str_to_hex(data))
     data = ''
 
-    #f.close()
+    f.close()
     print '* Read done.\n* Datalen:%s' % dlen
     #print data
     #exit()
